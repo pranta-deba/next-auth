@@ -1,12 +1,36 @@
-"use client"
+"use client";
+import SocialSignIn from '@/components/social_signin/SocialSignIn';
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 const page = () => {
+    const router = useRouter();
+    const [loader, setLoader] = useState(false);
+
     const handleLogin = async (e) => {
+        setLoader(true)
         e.preventDefault();
         const email = e.target.email.value;
         const password = e.target.password.value;
 
-        console.log({ email, password });
+        const res = await signIn('credentials', {
+            email,
+            password,
+            redirect: false,
+        })
+        console.log(res);
+
+        if (res.status === 200) {
+            setLoader(false)
+            toast.success('Login successful!');
+            router.push('/');
+        } else {
+            setLoader(false)
+            toast.error('Please provide a valid email and password!');
+        }
+
     }
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -45,7 +69,7 @@ const page = () => {
                     </div>
 
                     {/* Login Button */}
-                    <button className="w-full px-4 py-2 mb-4 text-white bg-pink-600 rounded-lg hover:bg-pink-700">
+                    <button disabled={loader} className="w-full px-4 py-2 mb-4 text-white bg-pink-600 rounded-lg hover:bg-pink-700">
                         Login
                     </button>
                 </form>
@@ -57,23 +81,7 @@ const page = () => {
                 </div>
 
                 {/* Google Login Button */}
-                <button
-                    className="flex items-center justify-center w-full px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 48 48"
-                        width="24"
-                        height="24"
-                        className="mr-2"
-                    >
-                        <path
-                            fill="#4285F4"
-                            d="M44.5 20H24v8.5h11.9c-1.1 4-4.9 7-9.9 7-5.5 0-10-4.5-10-10s4.5-10 10-10c2.5 0 4.8.9 6.6 2.4L38 12.9C34.7 9.9 29.7 8 24 8c-8.8 0-16 7.2-16 16s7.2 16 16 16c7.9 0 14.6-5.6 15.9-13h-12v-6.5h21v-1c0-1.1-.1-2.2-.4-3.2z"
-                        />
-                    </svg>
-                    Sign in with Google
-                </button>
+                <SocialSignIn loader={loader} setLoader={setLoader}/>
             </div>
         </div>
     );

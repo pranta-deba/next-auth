@@ -2,6 +2,7 @@ import Navbar from "@/components/common/Navbar";
 import "./globals.css";
 import Footer from "@/components/common/Footer";
 import AuthProvider from "@/services/AuthProvider";
+import { Toaster } from "react-hot-toast";
 
 export const metadata = {
   title: "Learn Auth",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
           <footer>
             <Footer />
           </footer>
+          <Toaster />
         </body>
       </AuthProvider>
     </html>
